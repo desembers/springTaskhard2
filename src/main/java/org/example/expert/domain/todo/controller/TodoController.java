@@ -3,6 +3,7 @@ package org.example.expert.domain.todo.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.todo.dto.TodoSearchDto;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
@@ -19,6 +20,18 @@ import java.time.LocalDateTime;
 public class TodoController {
 
     private final TodoService todoService;
+
+    @GetMapping("/todos/search")
+    public ResponseEntity<Page<TodoSearchDto>> search(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String managerNickname,
+            @RequestParam(required = false) LocalDateTime startAt,
+            @RequestParam(required = false) LocalDateTime endAt
+    ) {
+        return ResponseEntity.ok(todoService.search(page, size, title, managerNickname, startAt, endAt));
+    }
 
     @PostMapping("/todos")
     public ResponseEntity<TodoSaveResponse> saveTodo(
