@@ -4,7 +4,7 @@
 
 - nickname 필드에 index 적용
 
->> index 적용 방법은 User 엔티티 클래스에서 @Index 어노테이션을 사용하여 적용하거나, ALTER SQL 문으로 직접 적용할 수 있다.
+> index 적용 방법은 User 엔티티 클래스에서 @Index 어노테이션을 사용하여 적용하거나, ALTER SQL 문으로 직접 적용할 수 있다.
 
 ```java
 @Table(name = "users", indexes = {
