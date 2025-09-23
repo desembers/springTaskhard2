@@ -11,11 +11,20 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponse>> getUsers(
+            @RequestParam String nickname
+    ) {
+        return ResponseEntity.ok(userService.getUsers(nickname));
+    }
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<UserResponse> getUser(@PathVariable long userId) {
