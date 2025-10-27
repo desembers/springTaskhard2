@@ -23,3 +23,44 @@ ALTER TABLE users ADD INDEX idx_nickname (nickname);
 |--------------|-----------------|------------|---------|
 | 1,000,000    | 미적용          | 4,920      | -       |
 | 1,000,000    | 적용            | 251        | 94.9%   |
+
+
+
+API 작성    
+TODO (해야 할일)
+일정작성하기  POST  도메인(todo)  /todos/{todoId}/comments
+일정조회하기  GET   도메인(todo)  /todos/{todoId}/comments
+
+Manager(관리자)
+관리자작성 POST 도메인(Manager) /todos/{todoId}/managers
+관리자확인 GET  도메인(Manager) /todos/{todoId}/managers
+관리자제거 DELETE 도메인(Manager) /todos/{todoId}/managers/{managerId}
+
+User(사용자)
+사용자닉네임조회하기 GET 도메인(User) /users
+사용자정보조회하기 GET 도메인(User) /user/{userId}
+사용자정보수정하기 Put 도메인(User) /users
+사용자권한수정하기 Patch 도메인(User) /admin/users/{userId}
+
+Comment(댓글)
+댓글생성 POST 도메인(Comment) /todos/{todoId}/comments
+댓글조회 GET  도메인(Comment) /todos/{todoId}/comments
+
+Auth(인증인가)
+등록 Post 도메인(Auth) /auth/signup
+회원가입 Post 도메인(Auth) /auth/sigin
+
+Git Commit 규칙
+fix(버그픽스), feat(기능 개발), refactor(리펙토링), docs(문서업데이트)
+feat : 기능 설명
+
+Repository 
+다른 서비스 사용된것 
+00By000Id
+내부 구현용 케이스
+000InterfaceService
+List<000> get000By000Id()
+
+develop최신화 
+feature 브랜치 체크아웃
+

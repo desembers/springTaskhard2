@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.user.dto.request.UserRoleChangeRequest;
 import org.example.expert.domain.user.enums.UserRole;
+import org.example.expert.domain.user.enums.UserRole2;
 import org.example.expert.domain.user.service.UserAdminService;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,4 +27,15 @@ public class UserAdminController {
             @RequestBody UserRoleChangeRequest userRoleChangeRequest) {
         userAdminService.changeUserRole(userId, userRoleChangeRequest);
     }
+
+    @Secured(UserRole2.Authority.ADMIN)
+    @PatchMapping("/admins/users/{userId}")
+    public void changeUserRole2(
+        @AuthenticationPrincipal AuthUser authUser,
+        @PathVariable Long userId,
+        @RequestBody UserRoleChangeRequest request
+    ) {
+        userAdminService.changeUserRole2(userId, request);
+    }
+
 }

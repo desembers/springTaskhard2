@@ -3,9 +3,13 @@ package org.example.expert.domain.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.auth.dto.request.SigninRequest;
+import org.example.expert.domain.auth.dto.request.SigninRequest2;
 import org.example.expert.domain.auth.dto.request.SignupRequest;
+import org.example.expert.domain.auth.dto.request.SignupRequest2;
+import org.example.expert.domain.auth.dto.response.SiginResponse2;
 import org.example.expert.domain.auth.dto.response.SigninResponse;
 import org.example.expert.domain.auth.dto.response.SignupResponse;
+import org.example.expert.domain.auth.dto.response.SignupResponse2;
 import org.example.expert.domain.auth.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +26,20 @@ public class AuthController {
         return authService.signup(signupRequest);
     }
 
+    @PostMapping("/auth/signups")
+    public SignupResponse2 signups(@Valid @RequestBody SignupRequest2 request) {
+        return authService.signup2(request);
+    }
+
+
     @PostMapping("/auth/signin")
     public SigninResponse signin(@Valid @RequestBody SigninRequest signinRequest) {
         return authService.signin(signinRequest);
     }
+
+    @PostMapping("/auth/siginins")
+    public SiginResponse2 siginins(@Valid @RequestBody SigninRequest2 request) {
+        return authService.signin2(request);
+    }
+
 }

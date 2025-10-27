@@ -3,9 +3,10 @@ package org.example.expert.domain.user.service;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
-import org.example.expert.domain.common.service.S3Service;
+//import org.example.expert.domain.common.service.S3Service;
 import org.example.expert.domain.user.dto.request.UserChangePasswordRequest;
 import org.example.expert.domain.user.dto.response.UserResponse;
+import org.example.expert.domain.user.dto.response.UserResponse2;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final S3Service s3Service;
+    //private final S3Service s3Service;
 
     public List<UserResponse> getUsers(String nickname) {
         List<User> users = userRepository.findByNickname(nickname);
@@ -33,9 +34,21 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserResponse2> getUser2(String nickname) {
+        List<User> users = userRepository.findByNickname(nickname);
+        return users.stream().map(user -> new UserResponse2(user.getId(), user.getEmail())).collect(Collectors.toList());
+    }
+
     public UserResponse getUser(long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new InvalidRequestException("User not found"));
         return new UserResponse(user.getId(), user.getEmail());
+    }
+
+    public UserResponse2 getUser2(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new InvalidRequestException("User not found")
+        );
+        return new UserResponse2(user.getId(), user.getEmail());
     }
 
     @Transactional
@@ -56,25 +69,50 @@ public class UserService {
         user.changePassword(passwordEncoder.encode(userChangePasswordRequest.getNewPassword()));
     }
 
-
     @Transactional
-    public void changeImage(AuthUser authUser, MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new InvalidRequestException("이미지 파일이 필요합니다.");
+    public void changePassword2(long userId, UserChangePasswordRequest request) {
+        validateNewPassword2(request);
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new InvalidRequestException("User not found")
+        );
+
+        if(passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new InvalidRequestException("새 비밀번호는 기존 비밀번호와 같을수 없다.");
         }
 
-        User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new InvalidRequestException("User not found"));
-
-        String userImageUrl = s3Service.uploadImage(file);
-        user.changeImage(userImageUrl);
+        if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new InvalidRequestException("잘못된 비밀번호 입니다.");
+        }
+        user.changePassword(passwordEncoder.encode(request.getNewPassword()));
     }
+
+
+//    @Transactional
+//    public void changeImage(AuthUser authUser, MultipartFile file) {
+//        if (file == null || file.isEmpty()) {
+//            throw new InvalidRequestException("이미지 파일이 필요합니다.");
+//        }
+//
+//        User user = userRepository.findById(authUser.getId())
+//                .orElseThrow(() -> new InvalidRequestException("User not found"));
+//
+//        String userImageUrl = s3Service.uploadImage(file);
+//        user.changeImage(userImageUrl);
+//    }
 
     private static void validateNewPassword(UserChangePasswordRequest userChangePasswordRequest) {
         if (userChangePasswordRequest.getNewPassword().length() < 8 ||
                 !userChangePasswordRequest.getNewPassword().matches(".*\\d.*") ||
                 !userChangePasswordRequest.getNewPassword().matches(".*[A-Z].*")) {
             throw new InvalidRequestException("새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.");
+        }
+    }
+
+    private static void validateNewPassword2(UserChangePasswordRequest request) {
+        if (request.getNewPassword().length() < 8 || !request.getNewPassword().matches(".\\d,*") ||
+               !request.getNewPassword().matches(".*[A-Z].*")) {
+            throw new InvalidRequestException("새 비밀번호는 8자이상이어야하고, 숫자와 대문자가 포함해야합니다.");
         }
     }
 }
