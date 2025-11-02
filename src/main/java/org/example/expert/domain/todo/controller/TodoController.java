@@ -3,10 +3,14 @@ package org.example.expert.domain.todo.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.common.dto.AuthUser2;
 import org.example.expert.domain.todo.dto.TodoSearchDto;
+import org.example.expert.domain.todo.dto.TodoSearchDtos2;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
+import org.example.expert.domain.todo.dto.response.TodoResponse2;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSaveResponse2;
 import org.example.expert.domain.todo.service.TodoService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +45,14 @@ public class TodoController {
         return ResponseEntity.ok(todoService.saveTodo(authUser, todoSaveRequest));
     }
 
+    @PostMapping("/todo")
+    public ResponseEntity<TodoSaveResponse2> saveTodo2(
+            @AuthenticationPrincipal AuthUser2 authUser2,
+            @Valid @RequestBody TodoSaveRequest request
+    ) {
+        return ResponseEntity.ok(todoService.saveTodo2(authUser2, request));
+    }
+
     @GetMapping("/todos")
     public ResponseEntity<Page<TodoResponse>> getTodos(
             @RequestParam(defaultValue = "1") int page,
@@ -52,8 +64,25 @@ public class TodoController {
         return ResponseEntity.ok(todoService.getTodos(page, size, weather, startAt, endAt));
     }
 
+    @GetMapping("/todo")
+    public ResponseEntity<Page<TodoResponse2>> getTodos2(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String weather,
+            @RequestParam(required = false) LocalDateTime startAt,
+            @RequestParam(required = false) LocalDateTime endAt
+    ) {
+        return ResponseEntity.ok(todoService.getTodos2(page, size, weather, startAt, endAt));
+    }
+
     @GetMapping("/todos/{todoId}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable long todoId) {
         return ResponseEntity.ok(todoService.getTodo(todoId));
     }
+
+    @GetMapping("/todo/{todoId}")
+    public ResponseEntity<TodoResponse2> getTodo2(@PathVariable long todoId) {
+        return ResponseEntity.ok(todoService.getTodo2(todoId));
+    }
+
 }

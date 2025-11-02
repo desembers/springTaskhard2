@@ -3,14 +3,19 @@ package org.example.expert.domain.todo.service;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.dto.AuthUser;
+import org.example.expert.domain.common.dto.AuthUser2;
 import org.example.expert.domain.common.exception.InvalidRequestException;
 import org.example.expert.domain.todo.dto.TodoSearchDto;
+import org.example.expert.domain.todo.dto.TodoSearchDtos2;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
+import org.example.expert.domain.todo.dto.response.TodoResponse2;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSaveResponse2;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.dto.response.UserResponse;
+import org.example.expert.domain.user.dto.response.UserResponse2;
 import org.example.expert.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,6 +61,29 @@ public class TodoService {
         );
     }
 
+    @Transactional
+    public TodoSaveResponse2 saveTodo2(AuthUser2 authUser2, TodoSaveRequest request) {
+        User user = User.fromAuthUser2(authUser2);
+        String weather = weatherClient.getTodayWeather();
+
+        Todo newTodo = new Todo(
+          request.getTitle(),
+          request.getContents(),
+          weather,
+          user
+        );
+
+        Todo savedTodo = todoRepository.save(newTodo);
+
+        return new TodoSaveResponse2(
+                savedTodo.getId(),
+                savedTodo.getTitle(),
+                savedTodo.getContents(),
+                weather,
+                new UserResponse2(user.getId(), user.getEmail())
+        );
+    }
+
     public Page<TodoResponse> getTodos(int page, int size, String weather, LocalDateTime startAt, LocalDateTime endAt) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -67,6 +95,21 @@ public class TodoService {
                 todo.getContents(),
                 todo.getWeather(),
                 new UserResponse(todo.getUser().getId(), todo.getUser().getEmail()),
+                todo.getCreatedAt(),
+                todo.getModifiedAt()
+        ));
+    }
+
+    public Page<TodoResponse2> getTodos2(int page, int size, String weather, LocalDateTime startAt, LocalDateTime endAt) {
+        Pageable pageable = PageRequest.of(page -1, size);
+        Page<Todo> todos = todoRepository.searchTodos(pageable, weather, startAt, endAt);
+
+        return todos.map(todo -> new TodoResponse2(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getContents(),
+                todo.getWeather(),
+                new UserResponse2(todo.getUser().getId(), todo.getUser().getEmail()),
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         ));
@@ -84,6 +127,24 @@ public class TodoService {
                 todo.getContents(),
                 todo.getWeather(),
                 new UserResponse(user.getId(), user.getEmail()),
+                todo.getCreatedAt(),
+                todo.getModifiedAt()
+        );
+    }
+
+    public TodoResponse2 getTodo2(long todoId) {
+        Todo todo = todoRepository.findByIdWithUser(todoId).orElseThrow(
+                () -> new InvalidRequestException("Todo not found")
+        );
+
+        User user = todo.getUser();
+
+        return new TodoResponse2(
+                todo.getId(),
+                todo.getTitle(),
+                todo.getContents(),
+                todo.getWeather(),
+                new UserResponse2(user.getId(), user.getEmail()),
                 todo.getCreatedAt(),
                 todo.getModifiedAt()
         );

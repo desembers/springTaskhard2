@@ -64,3 +64,34 @@ List<000> get000By000Id()
 develop최신화 
 feature 브랜치 체크아웃
 
+## 기술 스택
+Jwt, Security
+
+## DataBase
+JPA 
+ 
+## Build Tool
+BuildGradle
+
+## Language
+Java.17
+
+## AWS
+S3
+
+#ERD관계
+User : Manager (1:N)
+하나의 사용자가 많은 매니저를 관리합니다 
+
+Todo : Manager (1:N)
+하나의 일정을 많은 매니저가 관리합니다 
+
+Comment : Todo (N : 1)
+하나의 일정이 많은 댓글을 답니다 
+
+User : todo (1 : N)
+하나의 사용자가 많은 일정을 작성합니다.
+
+
+
+

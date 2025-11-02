@@ -17,4 +17,10 @@ public class LogService {
     public void saveLog(String log) {
         logRepository.save(new Log(log));
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveLog2(String log) {
+        Log logs = new Log(log);
+        logRepository.save(logs);
+    }
 }
